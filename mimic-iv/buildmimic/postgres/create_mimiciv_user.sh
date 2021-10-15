@@ -1,23 +1,23 @@
 #!/bin/bash
-if [ -z ${MIMIC_PASSWORD+x} ]; then
-  echo "MIMIC_PASSWORD is unset";
+if [ -z ${DBPASS+x} ]; then
+  echo "DBPASS is unset";
   exit 1
 else
-  echo "MIMIC_PASSWORD is set";
+  echo "DBPASS is set";
 fi
 
-if [ -z ${MIMIC_DB+x} ]; then
-  MIMIC_DB=mimic
-  echo "MIMIC_DB is unset, using default '$MIMIC_DB'";
+if [ -z ${DBNAME+x} ]; then
+  DBNAME=eicu
+  echo "DBNAME is unset, using default '$DBNAME'";
 else
-  echo "MIMIC_DB is set to '$MIMIC_DB'";
+  echo "DBNAME is set to '$DBNAME'";
 fi
 
-if [ -z ${MIMIC_USER+x} ]; then
-  MIMIC_USER=postgres
-  echo "User is unset, using default '$MIMIC_USER'";
+if [ -z ${DBUSER+x} ]; then
+  DBUSER=postgres
+  echo "User is unset, using default '$DBUSER'";
 else
-  echo "User is set to '$MIMIC_USER'";
+  echo "User is set to '$DBUSER'";
 fi
 
 PSQL='psql'
@@ -55,14 +55,20 @@ if [[ $err2 == *"Peer authentication failed for user"* ]]; then
 fi
 
 # step 1) create user, if needed
-if [ "$MIMIC_USER" != "postgres" ]; then
+if [ "$DBUSER" != "postgres" ]; then
     # we need to create this user via postgres
-    # use SUDO to login as postgres
-    $PSQL -U postgres -d postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+    if $PSQL -U postgres -W -d postgres -t -c '\du' | cut -d \| -f 1 | grep -qw $DBUSER; then
+      echo "User already exists. Not recreating user."
+    else
+      $PSQL -U postgres -W -d postgres -c "CREATE USER $DBUSER WITH PASSWORD '$DBPASS';"
+    fi
 fi
 
-if [ "$MIMIC_DB" != "postgres" ]; then
+if [ "$DBNAME" != "postgres" ]; then
   # drop and recreate the database
-  $PSQL -U postgres -d postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
-  $PSQL -U postgres -d postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+  $PSQL -U postgres -W -d postgres -c "DROP DATABASE IF EXISTS $DBNAME;"
+  $PSQL -U postgres -W -d postgres -c "CREATE DATABASE $DBNAME OWNER $DBUSER;"
 fi
+
+# create the schema on the database
+$PSQL -U postgres -W -d $DBNAME -c "CREATE SCHEMA $DBSCHEMA AUTHORIZATION $DBUSER;"

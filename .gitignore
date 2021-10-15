@@ -61,3 +61,10 @@ target/
 
 # PyCharm / JetBrains
 .idea
+
+# VScode
+.devcontainer
+.env
+.vscode
+
+db/
