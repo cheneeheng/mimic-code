@@ -144,7 +144,7 @@ def get_table(_conn: psycopg2.extensions.connection,
         # df.sort_values('intime', ascending=True, inplace=True)
         # assert len(df[df.duplicated(['stay_id'])]) == 0
         print(f"Number of entries for {_table} : {df.shape[0]}")
-        print(f"Column names : {df.columns.tolist()}")
+        print(f"Column names : {df.columns.tolist()}\n")
 
     else:
         num_entries, col_names = 0, None
@@ -154,7 +154,7 @@ def get_table(_conn: psycopg2.extensions.connection,
             if col_names is None:
                 col_names = chunk.columns.tolist()
         print(f"Number of entries for {_table} : {num_entries}")
-        print(f"Column names : {col_names}")
+        print(f"Column names : {col_names}\n")
         df = pd.read_sql_query(query, _conn, chunksize=_chunk_size)
 
     return df

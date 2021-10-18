@@ -146,18 +146,21 @@ Concepts:
  mimic_derived | weight_durations       | table | mimiciv
 
 
+Current patient info:
+- from icustay_detail
+- charlson = uid, value (need to add new rows to ditem)
+-- uid for each diagnosis and 1 for charlson score.
+- icd = uid, value (hosp-diagnoses_icd)
+-- value = icd sorted by seq_num, with icd version then code.
+
 Current patient data:
 - heights (derived from chart events)
 - weights (derived from chart events)
-- charlson = uid, value (need to add new rows to ditem)
--- uid for each diagnosis and 1 for charlson score.
-- icd = uid, value, unit (hosp-diagnoses_icd)
--- unit = version, value = seq_num/priority, uid = icdcodes (need to add new rows to icds)
-- chemistry = time, uid, value, unit (values checked)
-- bg = time, uid, value, unit (values checked), (need to add new rows for calculated values)
+- chemistry = time, uid, value, unit (values checked) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
+- bg = time, uid, value, unit (values checked), (need to add new rows for calculated values) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
+
 - blood_differential = time, uid, value, unit (some values are imputed/calculated/derived.)
 - cardiac_marker
-- chemistry = time, uid, value, unit (values checked)
 - coagulation
 - complete_blood_count
 - creatinine_baseline = time, uid, value, unit (need new rows) (values may be derived/calculated)

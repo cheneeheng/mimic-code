@@ -1,1 +1,22 @@
-{"0": "subject_id", "1": "hadm_id", "2": "stay_id", "3": "gender", "4": "dod", "5": "admittime", "6": "dischtime", "7": "los_hospital", "8": "admission_age", "9": "ethnicity", "10": "hospital_expire_flag", "11": "hospstay_seq", "12": "first_hosp_stay", "13": "icu_intime", "14": "icu_outtime", "15": "los_icu", "16": "icustay_seq", "17": "first_icu_stay", "18": "first_careunit", "19": "last_careunit"}
+{
+    "0": "subject_id",
+    "1": "hadm_id",
+    "2": "stay_id",
+    "3": "gender",
+    "4": "dod",
+    "5": "admittime",
+    "6": "dischtime",
+    "7": "los_hospital",
+    "8": "admission_age",
+    "9": "ethnicity",
+    "10": "hospital_expire_flag",
+    "11": "hospstay_seq",
+    "12": "first_hosp_stay",
+    "13": "icu_intime",
+    "14": "icu_outtime",
+    "15": "los_icu",
+    "16": "icustay_seq",
+    "17": "first_icu_stay",
+    "18": "first_careunit",
+    "19": "last_careunit"
+}
