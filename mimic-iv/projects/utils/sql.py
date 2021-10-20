@@ -1,21 +1,17 @@
-"""Exports data from SQL database into json files. """
-
 import getpass
-import json
-import math
 import os
 import psycopg2
+from psycopg2 import sql
 import pandas as pd
-import time
 
 from configobj import ConfigObj
-from multiprocessing import Pool, RLock
 from tqdm import tqdm
 from typing import Tuple
 
-from projects import *
 
-__all__ = ['connect_to_database', 'get_id_list', 'get_table']
+__all__ = ['connect_to_database', 'get_id_list',
+           'get_database_table_column_name',
+           'get_database_table_as_dataframe']
 
 
 def connect_to_database(db_path: str) -> Tuple[str, str, str,
@@ -95,41 +91,68 @@ def connect_to_database(db_path: str) -> Tuple[str, str, str,
             query_schema_derived, conn)
 
 
-def get_id_list(_conn: psycopg2.extensions.connection,
-                _query_schema: str,
-                _table: str,
-                _main_col: str) -> list:
-    """Get the list of ids."""
-
-    assert _table in ['patients', 'transfers', 'admissions', 'icustays']
-
-    print(f"Getting {_table} data")
-
-    # if UNIT_TYPES_SQL is not None:
-    #     query = query_schema + """
-    #     select *
-    #     from patient
-    #     where unitType in {}
-    #     """.format(UNIT_TYPES_SQL)
-    # else:
-    query = _query_schema + f"""
-    select *
-    from {_table}
+def get_database_table_column_name(_conn: psycopg2.extensions.connection,
+                                   _table: str) -> list:
     """
-    df = pd.read_sql_query(query, _conn)
-    df.sort_values(_main_col, ascending=True, inplace=True)
-    df.drop_duplicates(subset=[_main_col])
+    Taken from:
+    https://kb.objectrocket.com/postgresql/get-the-column-names-from-a-postgresql-table-with-the-psycopg2-python-adapter-756 # noqa
 
-    print(f"Number of entries for {_table} : {df.shape[0]}")
+    defines a function that gets the column names from a PostgreSQL table.
 
-    return df[_main_col].tolist()
+    """
+    # declare an empty list for the column names
+    columns = []
+
+    # declare cursor objects from the connection
+    col_cursor = _conn.cursor()
+
+    # concatenate string for query to get column names
+    # SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'some_table';  # noqa
+    col_names_str = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE "
+    col_names_str += "table_name = '{}';".format(_table)
+
+    # print the SQL string
+    # print("\ncol_names_str:", col_names_str)
+
+    try:
+        sql_object = sql.SQL(
+            # pass SQL statement to sql.SQL() method
+            col_names_str
+        ).format(
+            # pass the identifier to the Identifier() method
+            sql.Identifier(_table)
+        )
+
+        # execute the SQL string to get list with col names in a tuple
+        col_cursor.execute(sql_object)
+
+        # get the tuple element from the liast
+        col_names = (col_cursor.fetchall())
+
+        # print list of tuples with column names
+        # print("\ncol_names:", col_names)
+
+        # iterate list of tuples and grab first element
+        for tup in col_names:
+
+            # append the col name string to the list
+            columns += [tup[0]]
+
+        # close the cursor object to prevent memory leaks
+        col_cursor.close()
+
+    except Exception as err:
+        print("get_columns_names ERROR:", err)
+
+    # return the list of column names
+    return columns
 
 
-def get_table(_conn: psycopg2.extensions.connection,
-              _query_schema: str,
-              _table: str,
-              _col: str = None,
-              _chunk_size: int = None) -> pd.DataFrame:
+def get_database_table_as_dataframe(_conn: psycopg2.extensions.connection,
+                                    _query_schema: str,
+                                    _table: str,
+                                    _col: str = None,
+                                    _chunk_size: int = None) -> pd.DataFrame:
     """Get the data in `_table`."""
 
     print(f"Getting {_table} data")
@@ -160,79 +183,73 @@ def get_table(_conn: psycopg2.extensions.connection,
     return df
 
 
-def get_multiple_data_and_save(output_folder,
-                               patientunitstayid_list=[],
-                               pid=0):
-    """
-    Iterates over `patientunitstayid` and saves entries from all tables
-    with the similar id into json.
-    """
+def get_id_list(_conn: psycopg2.extensions.connection,
+                _query_schema: str,
+                _table: str,
+                _id_col_name: str,
+                _filter_col: tuple = None,
+                _filter_col_val: tuple = None) -> list:
+    """Get the list of ids."""
 
-    query_schema, conn = connect_to_database()
+    print(f"Getting {_table} data")
 
-    pbar = tqdm(patientunitstayid_list, position=pid+1)
-    for patientunitstayid in pbar:
+    if _filter_col is None:
+        query = _query_schema + f"""
+        select {_id_col_name}
+        from {_table}
+        """
 
-        time.sleep(1)
-        pbar.set_description(f"Processing {patientunitstayid}")
+    else:
+        assert isinstance(_filter_col_val, tuple)
+        query = _query_schema + f"""
+        select {_id_col_name}
+        from {_table}
+        where {_filter_col} in {_filter_col_val}
+        """
 
-        json_dict = {}
+    df = pd.read_sql_query(query, _conn)
+    df.sort_values(_id_col_name, ascending=True, inplace=True)
+    df.drop_duplicates(subset=[_id_col_name])
 
-        for table_name in TABLE_LIST:
+    print(f"Number of entries for {_table} : {df.shape[0]}")
 
-            query = query_schema + """
-            select *
-            from {}
-            where patientunitstayid = {}
-            """.format(table_name, patientunitstayid)
-            df = pd.read_sql_query(query, conn)
+    return df[_id_col_name].tolist()
 
-            label = df.columns.to_list()
+    # def get_multiple_data_and_save(output_folder,
+    #                                patientunitstayid_list=[],
+    #                                pid=0):
+    #     """
+    #     Iterates over `patientunitstayid` and saves entries from all tables
+    #     with the similar id into json.
+    #     """
 
-            json_dict[table_name] = {}
-            for label_i in label:
-                json_dict[table_name][label_i] = df[label_i].tolist()
+    #     query_schema, conn = connect_to_database()
 
-        json_path = f"{output_folder}/{patientunitstayid}.json"
-        with open(json_path, 'w') as json_file:
-            json.dump(json_dict, json_file)
+    #     pbar = tqdm(patientunitstayid_list, position=pid+1)
+    #     for patientunitstayid in pbar:
 
-    conn.close()
+    #         time.sleep(1)
+    #         pbar.set_description(f"Processing {patientunitstayid}")
 
+    #         json_dict = {}
 
-if __name__ == "__main__":
+    #         for table_name in TABLE_LIST:
 
-    (query_schema_core,
-     query_schema_hosp,
-     query_schema_icu,
-     query_schema_derived,
-     conn) = connect_to_database("db")
+    #             query = query_schema + """
+    #             select *
+    #             from {}
+    #             where patientunitstayid = {}
+    #             """.format(table_name, patientunitstayid)
+    #             df = pd.read_sql_query(query, conn)
 
-    # # list of subjects available in the database.
-    # subject_ids = get_id_list(query_schema_core, 'patients', 'subject_id')
+    #             label = df.columns.to_list()
 
-    # # list of amission available in the database.
-    # hadm_ids = get_id_list(query_schema_core, 'admissions', 'hadm_id')
+    #             json_dict[table_name] = {}
+    #             for label_i in label:
+    #                 json_dict[table_name][label_i] = df[label_i].tolist()
 
-    # # list of transfers in the database.
-    # transfer_ids = get_id_list(query_schema_core, 'transfers', 'transfer_id')
+    #         json_path = f"{output_folder}/{patientunitstayid}.json"
+    #         with open(json_path, 'w') as json_file:
+    #             json.dump(json_dict, json_file)
 
-    # icusstays table as pd.Dataframe.
-    # icu_stays_df = get_icu_stays(conn, query_schema_icu)
-
-    # interval = 1
-
-    # for i in range(MP_CHUNK_START, MP_CHUNK_SIZE, interval):
-
-    #     x = npi(patientunitstayid_list) * i
-    #     y = npi(patientunitstayid_list) * (i + interval)
-    #     list_i = patientunitstayid_list[x:y]
-
-    #     output_folder = os.path.join(DB_EXPORT_PATH, f'{i}')
-    #     os.makedirs(output_folder, exist_ok=True)
-    #     parallel_processing(get_multiple_data_and_save,
-    #                         MP_NUM_PROCESSES,
-    #                         output_folder,
-    #                         list_i)
-
-    conn.close()
+    #     conn.close()

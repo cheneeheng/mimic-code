@@ -152,30 +152,32 @@ Current patient info:
 -- uid for each diagnosis and 1 for charlson score.
 - icd = uid, value (hosp-diagnoses_icd)
 -- value = icd sorted by seq_num, with icd version then code.
+- creatinine_baseline = time, uid, value, unit (need new rows) (values may be derived/calculated)
+
 
 Current patient data:
 - heights (derived from chart events)
 - weights (derived from chart events)
-- chemistry = time, uid, value, unit (values checked) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
-- bg = time, uid, value, unit (values checked), (need to add new rows for calculated values) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
-
-- blood_differential = time, uid, value, unit (some values are imputed/calculated/derived.)
-- cardiac_marker
-- coagulation
-- complete_blood_count
-- creatinine_baseline = time, uid, value, unit (need new rows) (values may be derived/calculated)
-- enzymes
-- inflammation
+- chemistry = time, uid, value, unit (values checked in sql) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
+- bg = time, uid, value, unit (values checked in sql), (need to add new rows for calculated values) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
+- blood_differential = time, uid, value, unit (some values are imputed/calculated/derived.) NEED TO ADD UNITS. SOME ARE AVAILABLE IN LABEVENTS
+- cardiac_marker NEED TO ADD UNITS. 
+- coagulation NEED TO ADD UNITS. 
+- complete_blood_count NEED TO ADD UNITS. 
+- enzyme NEED TO ADD UNITS. 
+- inflammation NEED TO ADD UNITS. 
 - oxygen_delivery (values merged)
-- rhythm
-- urine_output_rate (urine output per hour) (need new rows) (values are calculated) (need verify)
+- rhythm NEED TO ADD UNITS. 
 - urine_output (values merged)
-- ventilator_setting (values merged) (some values are checked)
-- vitalsign (values merged) (values checked)
-- medication (need to choose, some are provided)
+- urine_output_rate (urine output per hour) (need new rows) (values are calculated) (need verify)
+- ventilator_setting (values merged) (some values are checked in sql) NEED TO ADD UNITS. 
+- vitalsign (values merged) (values checked in sql)
 
-- kdigo* (new rows needed)
+- kdigo* (new rows needed) NEED TO ADD UNITS. 
 - meld (new rows needed)
+
+- medication (need to choose, some are provided in concepts)
+
 
 
 

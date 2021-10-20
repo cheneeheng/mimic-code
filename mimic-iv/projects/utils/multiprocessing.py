@@ -7,7 +7,7 @@ from tqdm import tqdm
 __all__ = ['parallel_processing']
 
 
-def _check_arr_arg_length(arg, length: int):
+def check_arr_arg_length(arg, length: int):
     if length >= 0:
         assert len(arg) == length
     return len(arg)
@@ -20,13 +20,13 @@ def parallel_processing(func, num_of_processes: int, *args):
 
     for arg in args:
         if isinstance(arg, list):
-            c = _check_arr_arg_length(arg, c)
+            c = check_arr_arg_length(arg, c)
             arrays.append(arg)
         elif isinstance(arg, tuple):
-            c = _check_arr_arg_length(arg, c)
+            c = check_arr_arg_length(arg, c)
             arrays.append(arg)
         elif isinstance(arg, np.ndarray):
-            c = _check_arr_arg_length(arg, c)
+            c = check_arr_arg_length(arg, c)
             arrays.append(arg)
         else:
             non_arrays.append(arg)
