@@ -1,34 +1,8 @@
  https://mimic.mit.edu/docs/iv/modules/
  
- mimic_core         | admissions              | table | mimiciv
- mimic_core         | patients                | table | mimiciv
- mimic_core         | transfers               | table | mimiciv
- mimic_hosp         | d_hcpcs                 | table | mimiciv
- mimic_hosp         | d_icd_diagnoses         | table | mimiciv
- mimic_hosp         | d_icd_procedures        | table | mimiciv
- mimic_hosp         | d_labitems              | table | mimiciv
- mimic_hosp         | diagnoses_icd           | table | mimiciv
- mimic_hosp         | drgcodes                | table | mimiciv
- mimic_hosp         | emar                    | table | mimiciv
- mimic_hosp         | emar_detail             | table | mimiciv
- mimic_hosp         | hcpcsevents             | table | mimiciv
- mimic_hosp         | labevents               | table | mimiciv
- mimic_hosp         | microbiologyevents      | table | mimiciv
- mimic_hosp         | pharmacy                | table | mimiciv
- mimic_hosp         | poe                     | table | mimiciv
- mimic_hosp         | poe_detail              | table | mimiciv
- mimic_hosp         | prescriptions           | table | mimiciv
- mimic_hosp         | procedures_icd          | table | mimiciv
- mimic_hosp         | services                | table | mimiciv
- mimic_icu          | chartevents             | table | mimiciv
- mimic_icu          | d_items                 | table | mimiciv
- mimic_icu          | datetimeevents          | table | mimiciv
- mimic_icu          | icustays                | table | mimiciv
- mimic_icu          | inputevents             | table | mimiciv
- mimic_icu          | outputevents            | table | mimiciv
- mimic_icu          | procedureevents         | table | mimiciv
+----------------------------------------------------------------
+icu -> icustays 
 
-icu -> icustays
 Care unit types :
 Cardiac Vascular Intensive Care Unit (CVICU)
 Coronary Care Unit (CCU)
@@ -40,7 +14,10 @@ Neuro Surgical Intensive Care Unit (Neuro SICU)
 Surgical Intensive Care Unit (SICU)
 Trauma SICU (TSICU)
 
-core -> transfersCare unit types :
+----------------------------------------------------------------
+core -> transfers 
+
+Care unit types :
 Cardiac Surgery
 Cardiac Vascular Intensive Care Unit (CVICU)
 Cardiology
@@ -84,7 +61,7 @@ Trauma SICU (TSICU)
 Unknown
 Vascular
 
-
+----------------------------------------------------------------
 Concepts:
  mimic_derived | age                    | table | mimiciv
  mimic_derived | antibiotic             | table | mimiciv
@@ -145,16 +122,18 @@ Concepts:
  mimic_derived | vitalsign              | table | mimiciv
  mimic_derived | weight_durations       | table | mimiciv
 
-
+----------------------------------------------------------------
 Current patient info:
 - from icustay_detail
-- charlson = uid, value (need to add new rows to ditem)
+- charlson = uid, value 
 -- uid for each diagnosis and 1 for charlson score.
 - icd = uid, value (hosp-diagnoses_icd)
 -- value = icd sorted by seq_num, with icd version then code.
-- creatinine_baseline = time, uid, value, unit (need new rows) (values may be derived/calculated)
+- creatinine_baseline = time, uid, value, unit (values may be derived/calculated)
 
+- meld (new rows needed) ==>> NOT INCLUDED FOR NOW.
 
+----------------------------------------------------------------
 Current patient data:
 - heights (derived from chart events)
 - weights (derived from chart events)
@@ -172,14 +151,5 @@ Current patient data:
 - urine_output_rate (urine output per hour) (need new rows) (values are calculated) (need verify)
 - ventilator_setting (values merged) (some values are checked in sql) NEED TO ADD UNITS. 
 - vitalsign (values merged) (values checked in sql)
-
-- kdigo* (new rows needed) NEED TO ADD UNITS. 
-- meld (new rows needed)
-
-- medication (need to choose, some are provided in concepts)
-
-
-
-
-Unused patient data:
-- all d_item not use previously.
+- kdigo_stages (new rows needed) NEED TO ADD UNITS. 
+- medication ==>> EXCEPT ANTIBIOTICS, THEY ARE BASED ON PRESRCIPTIONS

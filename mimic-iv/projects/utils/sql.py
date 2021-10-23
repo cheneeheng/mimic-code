@@ -3,13 +3,15 @@ import os
 import psycopg2
 from psycopg2 import sql
 import pandas as pd
+import itertools
 
 from configobj import ConfigObj
 from tqdm import tqdm
 from typing import Tuple
 
 
-__all__ = ['connect_to_database', 'get_id_list',
+__all__ = ['connect_to_database',
+           'get_id_list',
            'get_database_table_column_name',
            'get_database_table_as_dataframe']
 
@@ -152,35 +154,47 @@ def get_database_table_as_dataframe(_conn: psycopg2.extensions.connection,
                                     _query_schema: str,
                                     _table: str,
                                     _col: str = None,
-                                    _chunk_size: int = None) -> pd.DataFrame:
+                                    _chunk_size: int = None,
+                                    _filter_col: tuple = None,
+                                    _filter_col_val: tuple = None
+                                    ) -> pd.DataFrame:
     """Get the data in `_table`."""
 
     print(f"Getting {_table} data")
 
-    query = _query_schema + f"""
-    select {'*' if _col is None else _col}
-    from {_table}
-    """
+    if _filter_col is None:
+        query = _query_schema + f"""
+        select {'*' if _col is None else _col}
+        from {_table}
+        """
+    else:
+        assert isinstance(_filter_col_val, tuple)
+        query = _query_schema + f"""
+        select {'*' if _col is None else _col}
+        from {_table}
+        where {_filter_col} in {_filter_col_val}
+        """
 
     if _chunk_size is None:
         df = pd.read_sql_query(query, _conn, chunksize=_chunk_size)
         # df.sort_values('intime', ascending=True, inplace=True)
         # assert len(df[df.duplicated(['stay_id'])]) == 0
+        num_entries = df.shape[0]
         print(f"Number of entries for {_table} : {df.shape[0]}")
         print(f"Column names : {df.columns.tolist()}\n")
 
     else:
         num_entries, col_names = 0, None
         df_iter = pd.read_sql_query(query, _conn, chunksize=_chunk_size)
+        df, df_iter = itertools.tee(df_iter)
         for chunk in tqdm(df_iter):
             num_entries += len(chunk)
             if col_names is None:
                 col_names = chunk.columns.tolist()
         print(f"Number of entries for {_table} : {num_entries}")
         print(f"Column names : {col_names}\n")
-        df = pd.read_sql_query(query, _conn, chunksize=_chunk_size)
 
-    return df
+    return df, num_entries
 
 
 def get_id_list(_conn: psycopg2.extensions.connection,

@@ -1,0 +1,42 @@
+uid	label	units	category	notes
+100001	height	cm		merged from 226707, 226730 in chartevents. Between 120 and 230
+100002	weight	kg		merged from 226512, 224639 in chartevents.
+100003	wbc	K/uL	Hematology, Chemistry	merged from 51300, 51301, 51755 in labeevents
+100004	lymphocytes	%	Hematology	merged from 51244, 51245 in labevenets
+100005	eosinophils_abs	K/uL	Hematology	52073 in K/uL, 51199 in #/uL, labeevents
+100006	lymphocytes_abs	K/uL	Hematology	51133 in K/uL, 52769 in #/uL, labeevents
+100007	monocytes_abs	K/uL	Hematology	52074 in K/uL, 51253 in #/uL, labeevents
+100008	o2_delivery_device_1		Respiratory	from 226732, sorted by device value, chartevents
+100009	o2_delivery_device_2		Respiratory	from 226732, sorted by device value, chartevents
+100010	o2_delivery_device_3		Respiratory	from 226732, sorted by device value, chartevents
+100011	o2_delivery_device_4		Respiratory	from 226732, sorted by device value, chartevents
+100012	o2_flow	L/min	Respiratory	merged from (223834, 227582, 224691), chart evenets
+100013	urineoutput	mL	Output	merged from 226559, 226560, 226561, 226584, 226563, 226564, 226565, 226567, 226557, 226558, 227488, 227489, chart events
+100014	urineoutput_6hr	mL		output within 6hr (floor)
+100015	urineoutput_12hr	mL		
+100016	urineoutput_24hr	mL		
+100017	uo_mlkghr_6hr	mL/kg/hr		(urineoutput_6hr/weight/uo_tm_6hr)
+100018	uo_mlkghr_12hr	mL/kg/hr		
+100019	uo_mlkghr_24hr	mL/kg/hr		
+100020	uo_tm_6hr	hr		time from last uo measurement within 6hr (floor)
+100021	uo_tm_12hr	hr		
+100022	uo_tm_24hr	hr		
+100023	peep	cmH2O	Respiratory	merged from (220339, 224700), chart events
+100024	sbp	mmHg	Routine Vital Signs	(220179, 220050)
+100025	dbp	mmHg	Routine Vital Signs	(220180, 220051)
+100026	mbp	mmHg	Routine Vital Signs	(220052, 220181, 225312)
+100027	resp_rate	insp/min	Respiratory	(220210, 224690)
+100028	temperature	degC	Routine Vital Signs	(223761, 223762)
+100029	glucose_chartevents		Labs	(225664, 220621, 226537)
+100030	antibiotic			from hosp.prescriptions
+100031	creat_low_past_48hr		KDIGO	derived
+100032	creat_low_past_7day		KDIGO	derived
+100033	aki_stage_creat		KDIGO	derived
+100034	aki_stage_uo		KDIGO	derived
+100035	aki_stage		KDIGO	derived
+100036	Epinephrine	mg	Medications	chart events
+100037	Furosemide (Lasix)	mg	Medications	chart events
+100038	pao2fio2ratio		Blood Gas	from blood, lab events
+100039	Alveolar-arterial Gradient, Calculated		Blood Gas	from blood, lab events
+100040	Specimen Prediction		Blood Gas	from blood, lab events
+100041	Specimen Probability		Blood Gas	from blood, lab events

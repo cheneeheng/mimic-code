@@ -67,4 +67,4 @@ target/
 .env
 .vscode
 
-db/
+# db/
