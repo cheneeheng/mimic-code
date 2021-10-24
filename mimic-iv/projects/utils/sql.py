@@ -157,7 +157,7 @@ def get_database_table_as_dataframe(_conn: psycopg2.extensions.connection,
                                     _chunk_size: int = None,
                                     _filter_col: tuple = None,
                                     _filter_col_val: tuple = None
-                                    ) -> pd.DataFrame:
+                                    ) -> Tuple[pd.DataFrame, int]:
     """Get the data in `_table`."""
 
     print(f"Getting {_table} data")

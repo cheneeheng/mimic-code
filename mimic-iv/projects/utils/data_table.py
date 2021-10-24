@@ -4,7 +4,7 @@ import numpy as np
 
 
 __all__ = ['save_dsv', 'load_dsv',
-           'save_info_dsv', 'save_data_dsv',
+           #    'save_info_dsv', 'save_data_dsv',
            'load_info_dsv', 'load_data_dsv',
            'InfoTable', 'DataTable']
 
@@ -24,26 +24,24 @@ def load_dsv(path: str) -> pd.DataFrame:
     return df
 
 
-def save_info_dsv(data_dir: str, stay_id: int, data: pd.DataFrame) -> dict:
-    save_path = os.path.join(data_dir, 'info_'+str(stay_id)+'.dsv')
-    save_dsv(save_path, data)
+# def save_info_dsv(data_dir: str, stay_id: int, data: pd.DataFrame) -> dict:
+#     save_path = os.path.join(data_dir, 'info_'+str(stay_id)+'.dsv')
+#     save_dsv(save_path, data)
 
 
-def save_data_dsv(data_dir: str, stay_id: int, data: pd.DataFrame) -> dict:
-    save_path = os.path.join(data_dir, 'data_'+str(stay_id)+'.dsv')
-    save_dsv(save_path, data)
+# def save_data_dsv(data_dir: str, stay_id: int, data: pd.DataFrame) -> dict:
+#     save_path = os.path.join(data_dir, 'data_'+str(stay_id)+'.dsv')
+#     save_dsv(save_path, data)
 
 
-def load_info_dsv(data_dir: str, stay_id: int) -> dict:
-    save_path = os.path.join(data_dir, 'info_'+str(stay_id)+'.dsv')
+def load_info_dsv(save_path: str) -> dict:
     data = load_dsv(save_path).to_dict('list')
     data = {k: np.array(v) if len(v) > 0 else np.array([], dtype=int)
             for k, v in data.items()}
     return data
 
 
-def load_data_dsv(data_dir: str, stay_id: int) -> dict:
-    save_path = os.path.join(data_dir, 'data_'+str(stay_id)+'.dsv')
+def load_data_dsv(save_path: str) -> dict:
     data = load_dsv(save_path).to_dict('list')
     data = {k: np.array(v) if len(v) > 0 else np.array([], dtype=int)
             for k, v in data.items()}
@@ -88,7 +86,8 @@ class DataTable(object):
     def _append_kwarg_check(self, kwargs: dict, key: str):
         value = kwargs.get(key, None)
         if key == 'unit':
-            value.replace(' ', '')
+            if isinstance(value, str):
+                value.replace(' ', '')
         elif key == 'starttime' and value is not None:
             value = str(value)
         elif key == 'endtime' and value is not None:
