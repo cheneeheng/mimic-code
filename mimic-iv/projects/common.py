@@ -23,4 +23,5 @@ UID_DATA_PATH = "mimic-iv/projects/resources/uid_data.json"
 TMP_CUSTOM_LIST = "mimic-iv/projects/resources/custom_list.json"
 TMP_CUSTOM_DICT = "mimic-iv/projects/resources/custom_dict.json"
 
-V1_ITEM_PATH = "mimic-iv/projects/resources/d_v1.tsv"
+V1_DATA_ITEM_PATH = "mimic-iv/projects/resources/d_v1.tsv"
+V1_INFO_ITEM_PATH = "mimic-iv/projects/resources/i_v1.tsv"
